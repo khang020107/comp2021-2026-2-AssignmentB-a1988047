@@ -482,6 +482,81 @@ public sealed class RecipeManagerTests
         var results = manager.SearchByTitle("Recipe C");
         Assert.Empty(results);
     }
+
+    //SearchByIngredient Tests
+    [Fact]
+    public void SearchByIngredient_PartialMatch_ReturnsMatchingRecipe()
+    {
+        var manager = CreateManager();
+        var results = manager.SearchByIngredient("pple");
+        var recipe = Assert.Single(results);
+        Assert.Equal(10,recipe.Id);
+    }
+
+    [Fact]
+    public void SearchByIngredient_DifferentCase_ReturnsMatchingRecipe()
+    {
+        var manager = CreateManager();
+        var results = manager.SearchByIngredient("1 APPLE");
+        var recipe = Assert.Single(results);
+        Assert.Equal(10,recipe.Id);
+    }
+
+    [Fact]
+    public void SearchByIngredient_NoMatch_ReturnsEmptyList()
+    {
+        var manager = CreateManager();
+        var results = manager.SearchByIngredient("2 LEMON");
+        Assert.Empty(results);
+    }
+
+    [Fact]
+    public void SearchByIngredient_BlankText_ReturnsAllRecipes()
+    {
+        var manager = CreateManager();
+        var results = manager.SearchByIngredient("");
+        Assert.Equal(2,results.Count);
+        Assert.Contains(results,recipe => recipe.Id == 10);
+        Assert.Contains(results,recipe => recipe.Id == 20);
+    }
+
+    [Fact]
+    public void SearchByIngredient_BlankTextWithSpaces_ReturnsAllRecipes()
+    {
+        var manager = CreateManager();
+        var results = manager.SearchByIngredient("   ");
+        Assert.Equal(2,results.Count);
+        Assert.Contains(results,recipe => recipe.Id == 10);
+        Assert.Contains(results,recipe => recipe.Id == 20);
+    }
+
+    [Fact]
+    public void SearchByIngredient_NullText_ReturnsAllRecipes()
+    {
+        var manager = CreateManager();
+        var results = manager.SearchByIngredient(null!);
+        Assert.Equal(2,results.Count);
+        Assert.Contains(results,recipe => recipe.Id == 10);
+        Assert.Contains(results,recipe => recipe.Id == 20);
+    }
+
+    [Fact]
+    public void SearchByIngredient_NewRecipesWithMultipleIngredientMatch_ReturnMatchingRecipeOnlyOnce()
+    {
+        var manager = CreateManager();
+        var newRecipe = new Recipe
+        {
+            Id = 30,
+            Title = "Recipe C",
+            Ingredients = new() {"1 banana", "2 green banana"},
+            Instructions = new() { "Wash", "Chop", "Mix"}
+        };
+        Assert.True(manager.AddRecipe(newRecipe));
+        var results = manager.SearchByIngredient("banana");
+        var singleResult = Assert.Single(results);
+        Assert.Equal(30,singleResult.Id);
+    }
+
     private static RecipeManager CreateManager()
     {
         return new RecipeManager(new[]
