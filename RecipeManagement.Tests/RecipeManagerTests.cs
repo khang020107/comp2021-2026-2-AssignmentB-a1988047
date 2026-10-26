@@ -426,6 +426,62 @@ public sealed class RecipeManagerTests
         Assert.Equal(3,manager.PendingInstructionCount);
         Assert.Equal("Wash",manager.PeekNextInstruction());
     }
+    // SearchByTitle tests
+    [Fact]
+    public void SearchByTitle_PartialMatch_ReturnsMatchingRecipe()
+    {
+        var manager = CreateManager();
+        var results = manager.SearchByTitle("pe A");
+        var recipe = Assert.Single(results);
+        Assert.Equal(10,recipe.Id);
+    }
+
+    [Fact]
+    public void SearchByTitle_DifferentCase_ReturnsMatchingRecipe()
+    {
+        var manager = CreateManager();
+        var results = manager.SearchByTitle("recipe A");
+        var recipe = Assert.Single(results);
+        Assert.Equal(10,recipe.Id);
+    }
+
+    [Fact]
+    public void SearchByTitle_BlankText_ReturnsAllRecipes()
+    {
+        var manager = CreateManager();
+        var results = manager.SearchByTitle("");
+        Assert.Equal(2,results.Count);
+        Assert.Contains(results,recipe => recipe.Id == 10);
+        Assert.Contains(results,recipe => recipe.Id == 20);
+    }
+
+    [Fact]
+    public void SearchByTitle_BlankTextWithSpaces_ReturnsAllRecipes()
+    {
+        var manager = CreateManager();
+        var results = manager.SearchByTitle("    ");
+        Assert.Equal(2,results.Count);
+        Assert.Contains(results,recipe => recipe.Id == 10);
+        Assert.Contains(results,recipe => recipe.Id == 20);
+    }
+
+    [Fact]
+    public void SearchByTitle_NullText_ReturnsAllRecipes()
+    {
+        var manager = CreateManager();
+        var results = manager.SearchByTitle(null!);
+        Assert.Equal(2,results.Count);
+        Assert.Contains(results,recipe => recipe.Id == 10);
+        Assert.Contains(results,recipe => recipe.Id == 20);
+    }
+
+    [Fact]
+    public void SearchByTitle_NoMatch_ReturnsEmptyList()
+    {
+        var manager = CreateManager();
+        var results = manager.SearchByTitle("Recipe C");
+        Assert.Empty(results);
+    }
     private static RecipeManager CreateManager()
     {
         return new RecipeManager(new[]
