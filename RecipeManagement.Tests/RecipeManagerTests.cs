@@ -743,6 +743,30 @@ public sealed class RecipeManagerTests
         var ids = protein.Select(recipe => recipe.Id).ToList();
         Assert.Equal([60,50,40,30],ids);
     }
+    
+    //AddSavedRecipe tests
+    [Fact]
+    public void AddSavedRecipe_ExistingRecipe_ReturnsTrueAndIsSaved()
+    {
+        var manager = CreateManager();
+        Assert.True(manager.AddSavedRecipe(10));
+    }
+
+    [Fact]
+    public void AddSavedRecipe_MissingRecipe_ReturnsFalse()
+    {
+        var manager = CreateManager();
+        Assert.False(manager.AddSavedRecipe(999));
+    }
+
+    [Fact]
+    public void AddSavedRecipe_DuplicateRecipe_ReturnsFalse()
+    {
+        var manager = CreateManager();
+        Assert.True(manager.AddSavedRecipe(10));
+        Assert.False(manager.AddSavedRecipe(10));
+    }
+
     private static RecipeManager CreateManager()
     {
         return new RecipeManager(new[]
