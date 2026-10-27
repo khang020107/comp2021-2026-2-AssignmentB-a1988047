@@ -802,6 +802,27 @@ public sealed class RecipeManagerTests
         Assert.True(manager.AddSavedRecipe(20));
         Assert.False(manager.IsRecipeSaved(10));
     }
+
+    // GetSavedRecipe Tests
+    [Fact]
+    public void GetSavedRecipes_NothingSaved_ReturnsEmptyList()
+    {
+        var manager = CreateManager();
+        Assert.Empty(manager.GetSavedRecipes());
+    }
+
+    [Fact]
+    public void GetSavedRecipes_SavedRecipes_ReturnsAllSavedIds()
+    {
+        var manager = CreateManager();
+        Assert.True(manager.AddSavedRecipe(10));
+        Assert.True(manager.AddSavedRecipe(20));
+        var results = manager.GetSavedRecipes();
+        Assert.Contains(10,results);
+        Assert.Contains(20,results);
+        Assert.Equal(2,results.Count);
+    }
+
     private static RecipeManager CreateManager()
     {
         return new RecipeManager(new[]
