@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Reflection;
 using RecipeManagement.Core;
 
 namespace RecipeManagement.Tests;
@@ -556,6 +555,194 @@ public sealed class RecipeManagerTests
         Assert.Equal(30,singleResult.Id);
     }
 
+    //GetHighestProteinRecipes tests
+    [Fact]
+    public void GetHighestProteinRecipes_ReturnsRecipesInDescendingProteinOrder()
+    {
+        var newRecipe1 = new Recipe
+        {
+            Id = 30,
+            Title = "Recipe C",
+            Ingredients = new() {"1 banana", "2 green banana"},
+            Instructions = new() { "Wash", "Chop", "Mix"},
+            Nutrition = new() {ProteinG = 10.0}
+        };
+        var newRecipe2 = new Recipe
+        {
+            Id = 40,
+            Title = "Recipe D",
+            Ingredients = new() {"1 coconut", "200g chicket fillet"},
+            Instructions = new() { "Wash", "Chop", "Mix"},
+            Nutrition = new() {ProteinG = 100.0}
+        };
+        var newRecipe3 = new Recipe
+        {
+            Id = 50,
+            Title = "Recipe E",
+            Ingredients = new() {"1 banana", "400g steak"},
+            Instructions = new() { "Wash", "Chop", "Mix"},
+            Nutrition = new() {ProteinG = 150.0}
+        };
+        var manager = CreateManager();
+        manager.AddRecipe(newRecipe1);
+        manager.AddRecipe(newRecipe2);
+        manager.AddRecipe(newRecipe3);
+        var protein = manager.GetHighestProteinRecipes(3);
+        Assert.Equal(3,protein.Count);
+        var ids = protein.Select(recipe => recipe.Id).ToList();
+        Assert.Equal([50,40,30],ids);
+    }
+
+    [Fact]
+    public void GetHighestProteinRecipes_MissingNutritionOrProtein_ExcludesRecipe()
+    {
+        var newRecipe1 = new Recipe
+        {
+            Id = 30,
+            Title = "Recipe C",
+            Ingredients = new() {"1 banana", "2 green banana"},
+            Instructions = new() { "Wash", "Chop", "Mix"},
+            Nutrition = new() {ProteinG = 10.0}
+        };
+        var newRecipe2 = new Recipe
+        {
+            Id = 40,
+            Title = "Recipe D",
+            Ingredients = new() {"1 coconut", "200g chicket fillet"},
+            Instructions = new() { "Wash", "Chop", "Mix"}
+        };
+        var newRecipe3 = new Recipe
+        {
+            Id = 50,
+            Title = "Recipe E",
+            Ingredients = new() {"1 banana", "400g steak"},
+            Instructions = new() { "Wash", "Chop", "Mix"},
+            Nutrition = new() {ProteinG = null}
+        };
+        var manager = CreateManager();
+        manager.AddRecipe(newRecipe1);
+        manager.AddRecipe(newRecipe2);
+        manager.AddRecipe(newRecipe3);
+        var protein = manager.GetHighestProteinRecipes(3);
+        Assert.Single(protein);
+        var ids = protein.Select(recipe => recipe.Id).ToList();
+        Assert.Equal([30],ids);
+    }
+
+    [Fact]
+    public void GetHighestProteinRecipes_CountZero_ReturnsEmptyList()
+    {
+        var manager = CreateManager();
+        var newRecipe3 = new Recipe
+        {
+            Id = 50,
+            Title = "Recipe E",
+            Ingredients = new() {"1 banana", "400g steak"},
+            Instructions = new() { "Wash", "Chop", "Mix"},
+            Nutrition = new() {ProteinG = 50}
+        };
+        Assert.True(manager.AddRecipe(newRecipe3));
+        var protein = manager.GetHighestProteinRecipes(0);
+        Assert.Empty(protein);
+    }
+
+    [Fact]
+    public void GetHighestProteinRecipes_CountNegative_ReturnsEmptyList()
+    {
+        var newRecipe3 = new Recipe
+        {
+            Id = 50,
+            Title = "Recipe E",
+            Ingredients = new() {"1 banana", "400g steak"},
+            Instructions = new() { "Wash", "Chop", "Mix"},
+            Nutrition = new() {ProteinG = 50}
+        };
+        var manager = CreateManager();
+        Assert.True(manager.AddRecipe(newRecipe3));
+        var protein = manager.GetHighestProteinRecipes(-10);
+        Assert.Empty(protein);
+    }
+    
+    [Fact]
+    public void GetHighestProteinRecipes_CountSmallerThanAvailable_ReturnsOnlyTopCount()
+    {
+        var newRecipe1 = new Recipe
+        {
+            Id = 30,
+            Title = "Recipe C",
+            Ingredients = new() {"1 banana", "2 green banana"},
+            Instructions = new() { "Wash", "Chop", "Mix"},
+            Nutrition = new() {ProteinG = 10.0}
+        };
+        var newRecipe2 = new Recipe
+        {
+            Id = 40,
+            Title = "Recipe D",
+            Ingredients = new() {"1 coconut", "200g chicket fillet"},
+            Instructions = new() { "Wash", "Chop", "Mix"},
+            Nutrition = new() {ProteinG = 100.0}
+        };
+        var newRecipe3 = new Recipe
+        {
+            Id = 50,
+            Title = "Recipe E",
+            Ingredients = new() {"1 banana", "400g steak"},
+            Instructions = new() { "Wash", "Chop", "Mix"},
+            Nutrition = new() {ProteinG = 150.0}
+        };
+        var manager = CreateManager();
+        manager.AddRecipe(newRecipe1);
+        manager.AddRecipe(newRecipe2);
+        manager.AddRecipe(newRecipe3);
+        var protein = manager.GetHighestProteinRecipes(2);
+        var ids = protein.Select(recipe => recipe.Id).ToList();
+        Assert.Equal([50,40],ids);
+    }
+
+    [Fact]
+    public void GetHighestProteinRecipes_CountLargerThanAvailable_ReturnsAllWithProtein()
+    {
+        var newRecipe1 = new Recipe
+        {
+            Id = 30,
+            Title = "Recipe C",
+            Ingredients = new() {"1 banana", "2 green banana"},
+            Instructions = new() { "Wash", "Chop", "Mix"},
+            Nutrition = new() {ProteinG = 10.0}
+        };
+        var newRecipe2 = new Recipe
+        {
+            Id = 40,
+            Title = "Recipe D",
+            Ingredients = new() {"1 coconut", "200g chicket fillet"},
+            Instructions = new() { "Wash", "Chop", "Mix"},
+            Nutrition = new() {ProteinG = 100.0}
+        };
+        var newRecipe3 = new Recipe
+        {
+            Id = 50,
+            Title = "Recipe E",
+            Ingredients = new() {"1 banana", "400g steak"},
+            Instructions = new() { "Wash", "Chop", "Mix"},
+            Nutrition = new() {ProteinG = 150.0}
+        };
+        var newRecipe4 = new Recipe
+        {
+            Id = 60,
+            Title = "Recipe F",
+            Ingredients = new() {"1 banana", "400g pork"},
+            Instructions = new() { "Wash", "Chop", "Mix"},
+            Nutrition = new() {ProteinG = 300.0}
+        };
+        var manager = CreateManager();
+        manager.AddRecipe(newRecipe1);
+        manager.AddRecipe(newRecipe2);
+        manager.AddRecipe(newRecipe3);
+        manager.AddRecipe(newRecipe4);
+        var protein = manager.GetHighestProteinRecipes(10);
+        var ids = protein.Select(recipe => recipe.Id).ToList();
+        Assert.Equal([60,50,40,30],ids);
+    }
     private static RecipeManager CreateManager()
     {
         return new RecipeManager(new[]
