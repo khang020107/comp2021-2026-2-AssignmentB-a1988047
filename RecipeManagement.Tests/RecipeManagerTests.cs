@@ -750,6 +750,7 @@ public sealed class RecipeManagerTests
     {
         var manager = CreateManager();
         Assert.True(manager.AddSavedRecipe(10));
+        Assert.True(manager.IsRecipeSaved(10));
     }
 
     [Fact]
@@ -766,6 +767,25 @@ public sealed class RecipeManagerTests
         Assert.True(manager.AddSavedRecipe(10));
         Assert.False(manager.AddSavedRecipe(10));
     }
+
+    // RemoveSavedRecipe Tests
+    [Fact]
+    public void RemoveSavedRecipe_SavedRecipe_ReturnsTrueAndRemoves()
+    {
+        var manager = CreateManager();
+        Assert.True(manager.AddSavedRecipe(10));
+        Assert.True(manager.RemoveSavedRecipe(10));
+        Assert.False(manager.IsRecipeSaved(10));
+    }
+
+    [Fact]
+    public void RemoveSavedRecipe_NotSavedRecipe_ReturnsFalse()
+    {
+        var manager = CreateManager();
+        Assert.False(manager.RemoveSavedRecipe(10));
+        Assert.False(manager.IsRecipeSaved(10));
+    }
+
 
     private static RecipeManager CreateManager()
     {
