@@ -823,6 +823,28 @@ public sealed class RecipeManagerTests
         Assert.Equal(2,results.Count);
     }
 
+    // PartB method workflow test 
+    [Fact]
+    public void PartBWorkflow_SearchSaveReportAndRemove_WorksTogether()
+    {
+        var manager = CreateManager();
+        var proteinRecipe = new Recipe
+        {
+            Id = 40,
+            Title = "Recipe D",
+            Ingredients = new() {"1 coconut", "200g chicket fillet"},
+            Instructions = new() { "Wash", "Chop", "Mix"},
+            Nutrition = new() {ProteinG = 100.0}
+        };
+        Assert.True(manager.AddRecipe(proteinRecipe));
+        int searchedRecipeId = Assert.Single(manager.SearchByTitle("ipe D").Select(recipe => recipe.Id));
+        Assert.True(manager.AddSavedRecipe(searchedRecipeId));
+        Assert.True(manager.IsRecipeSaved(searchedRecipeId));
+        var highProteinRecipe = Assert.Single(manager.GetHighestProteinRecipes(3));
+        Assert.Equal(searchedRecipeId,highProteinRecipe.Id);
+        Assert.True(manager.RemoveSavedRecipe(searchedRecipeId));
+        Assert.False(manager.IsRecipeSaved(searchedRecipeId));
+    }
     private static RecipeManager CreateManager()
     {
         return new RecipeManager(new[]
