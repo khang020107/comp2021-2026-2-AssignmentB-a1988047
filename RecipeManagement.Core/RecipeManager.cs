@@ -10,9 +10,8 @@ namespace RecipeManagement.Core;
 /// </summary>
 public sealed class RecipeManager : IRecipeManager
 {
-    // TODO Part A: add your private collection fields here.
-    private readonly Dictionary<int,Recipe> _recipes = new();
-    private readonly List<string> _shoppingList= new();
+    private readonly Dictionary<int, Recipe> _recipes = new();
+    private readonly List<string> _shoppingList = new();
     private readonly LinkedList<int> _cookingPlan = new();
     private readonly Stack<int> _removedRecipeHistory = new();
     private readonly Queue<string> _instructionQueue = new();
@@ -20,13 +19,13 @@ public sealed class RecipeManager : IRecipeManager
     public RecipeManager(IEnumerable<Recipe> recipes)
     {
         if (recipes == null) throw new ArgumentNullException(nameof(recipes));
-        foreach(Recipe recipe in recipes)
+        foreach (Recipe recipe in recipes)
         {
             if (recipe == null) throw new ArgumentNullException(nameof(recipe));
             if (recipe.Id <= 0) throw new ArgumentException($"Your recipe id {recipe.Id} is lower or equal to 0.");
             if (string.IsNullOrWhiteSpace(recipe.Title)) throw new ArgumentException("Your recipe title is currently null");
             if (_recipes.ContainsKey(recipe.Id)) throw new ArgumentException($"Duplicate recipe ID found: {recipe.Id}");
-            _recipes.Add(recipe.Id,recipe);
+            _recipes.Add(recipe.Id, recipe);
         }
     }
 
@@ -41,35 +40,35 @@ public sealed class RecipeManager : IRecipeManager
         if (recipe == null) throw new ArgumentNullException(nameof(recipe));
         if (recipe.Id <= 0) return false;
         if (string.IsNullOrWhiteSpace(recipe.Title)) return false;
-        if(_recipes.ContainsKey(recipe.Id)) return false;
+        if (_recipes.ContainsKey(recipe.Id)) return false;
         _recipes.Add(recipe.Id, recipe);
         return true;
     }
 
     public Recipe? FindRecipe(int recipeId)
     {
-        _recipes.TryGetValue(recipeId,out var value);
-        return value; 
+        _recipes.TryGetValue(recipeId, out var value);
+        return value;
     }
 
     public bool RemoveRecipe(int recipeId)
     {
-        if(FindRecipe(recipeId) == null) return false;
-        if(_cookingPlan.Contains(recipeId)) return false;
+        if (FindRecipe(recipeId) == null) return false;
+        if (_cookingPlan.Contains(recipeId)) return false;
         return _recipes.Remove(recipeId);
     }
 
     public int AddIngredientsToShoppingList(int recipeId)
     {
         Recipe? recipe = FindRecipe(recipeId);
-        if(recipe == null) return 0;
+        if (recipe == null) return 0;
         _shoppingList.AddRange(recipe.Ingredients);
-        return recipe.Ingredients.Count;   
+        return recipe.Ingredients.Count;
     }
 
     public IReadOnlyList<string> GetShoppingList()
     {
-        return _shoppingList.AsReadOnly(); // AsReadOnly() return read-only wrapper around a collection
+        return _shoppingList.AsReadOnly();
     }
     public void ClearShoppingList()
     {
@@ -77,32 +76,32 @@ public sealed class RecipeManager : IRecipeManager
     }
     public bool AddRecipeToCookingPlan(int recipeId)
     {
-        if(FindRecipe(recipeId) == null) return false;
-        if(_cookingPlan.Contains(recipeId)) return false;
+        if (FindRecipe(recipeId) == null) return false;
+        if (_cookingPlan.Contains(recipeId)) return false;
         _cookingPlan.AddLast(recipeId);
         return true;
     }
 
     public bool RemoveRecipeFromCookingPlan(int recipeId)
     {
-        if(!_cookingPlan.Remove(recipeId)) return false;
+        if (!_cookingPlan.Remove(recipeId)) return false;
         _removedRecipeHistory.Push(recipeId);
         return true;
     }
-  
+
     public bool RestoreLastRemovedRecipe()
     {
-        if(_removedRecipeHistory.Count == 0) return false;
+        if (_removedRecipeHistory.Count == 0) return false;
         int recipeId = _removedRecipeHistory.Pop();
-        if(FindRecipe(recipeId) == null) return false;
-        if(_cookingPlan.Contains(recipeId)) return false;
+        if (FindRecipe(recipeId) == null) return false;
+        if (_cookingPlan.Contains(recipeId)) return false;
         _cookingPlan.AddLast(recipeId);
         return true;
     }
     public int? PeekLastRemovedRecipe()
     {
-        if(_removedRecipeHistory.Count == 0) return null;
-        return _removedRecipeHistory.Peek(); 
+        if (_removedRecipeHistory.Count == 0) return null;
+        return _removedRecipeHistory.Peek();
     }
     public IReadOnlyList<int> GetCookingPlan()
     {
@@ -112,10 +111,10 @@ public sealed class RecipeManager : IRecipeManager
     public bool StartCooking(int recipeId)
     {
         Recipe? recipe = FindRecipe(recipeId);
-        if(recipe == null) return false;
-        if(recipe.Instructions.Count == 0) return false;
+        if (recipe == null) return false;
+        if (recipe.Instructions.Count == 0) return false;
         _instructionQueue.Clear();
-        foreach(string instruction in recipe.Instructions)
+        foreach (string instruction in recipe.Instructions)
         {
             _instructionQueue.Enqueue(instruction);
         }
@@ -124,19 +123,19 @@ public sealed class RecipeManager : IRecipeManager
 
     public string? PeekNextInstruction()
     {
-        if(_instructionQueue.Count == 0) return null;
+        if (_instructionQueue.Count == 0) return null;
         return _instructionQueue.Peek();
     }
 
     public string? CompleteNextInstruction()
     {
-        if(_instructionQueue.Count == 0) return null;
+        if (_instructionQueue.Count == 0) return null;
         return _instructionQueue.Dequeue();
     }
 
     public IReadOnlyList<Recipe> SearchByTitle(string searchText)
     {
-        if(string.IsNullOrWhiteSpace(searchText))
+        if (string.IsNullOrWhiteSpace(searchText))
         {
             return _recipes.Values.ToList();
         }
@@ -148,19 +147,19 @@ public sealed class RecipeManager : IRecipeManager
 
     public IReadOnlyList<Recipe> SearchByIngredient(string searchText)
     {
-        if(string.IsNullOrWhiteSpace(searchText))
+        if (string.IsNullOrWhiteSpace(searchText))
         {
             return _recipes.Values.ToList();
         }
         return _recipes.Values
         .Where(recipe => recipe.Ingredients
         .Any(ingredient => ingredient
-        .Contains(searchText,StringComparison.OrdinalIgnoreCase))).ToList();
+        .Contains(searchText, StringComparison.OrdinalIgnoreCase))).ToList();
     }
 
     public IReadOnlyList<Recipe> GetHighestProteinRecipes(int count)
     {
-        if(count <= 0)
+        if (count <= 0)
         {
             return new List<Recipe>();
         }
@@ -174,7 +173,7 @@ public sealed class RecipeManager : IRecipeManager
     public bool AddSavedRecipe(int recipeId)
     {
         if (FindRecipe(recipeId) == null) return false;
-        return _savedRecipeIds.Add(recipeId);   
+        return _savedRecipeIds.Add(recipeId);
     }
 
     public bool RemoveSavedRecipe(int recipeId)

@@ -48,24 +48,39 @@ public sealed class RecipeManagerTests
     [Fact]
     public void Constructor_RecipesIdLowerThan0_ThrowsArgumentException()
     {
-        var recipe1 = new Recipe{Id = -1, Title = "Pancakes"};
+        var recipe1 = new Recipe
+        {
+            Id = -1,
+            Title = "Pancakes"
+        };
         Assert.Throws<ArgumentException>(() => new RecipeManager([recipe1]));
     }
 
     [Fact]
     public void Constructor_EmptyRecipeTitle_ThrowsArgumentException()
     {
-        var recipe1 = new Recipe{Id = 34, Title = " "};
+        var recipe1 = new Recipe
+        {
+            Id = 34,
+            Title = " "
+        };
         Assert.Throws<ArgumentException>(() => new RecipeManager([recipe1]));
     }
 
     [Fact]
     public void Constructor_DuplicateId_ThrowsArgumentException()
     {
-        var recipe1 = new Recipe{Id = 34, Title = "Pancakes"};
-        var recipe2 = new Recipe{Id = 34, Title = "Job"};
-
-        Assert.Throws<ArgumentException>(() => new RecipeManager([recipe1,recipe2]));
+        var recipe1 = new Recipe
+        {
+            Id = 34,
+            Title = "Pancakes"
+        };
+        var recipe2 = new Recipe
+        {
+            Id = 34,
+            Title = "Job"
+        };
+        Assert.Throws<ArgumentException>(() => new RecipeManager([recipe1, recipe2]));
     }
 
     // FindRecipe() tests
@@ -84,45 +99,61 @@ public sealed class RecipeManagerTests
         var manager = CreateManager();
         Assert.Null(manager.FindRecipe(999));
     }
-    
+
     // AddRecipe() tests
     [Fact]
     public void AddRecipe_ValidRecipe_ReturnsTrueAndIncreasesCount()
     {
-        var recipe1 = new Recipe{Id = 34, Title = "Pancakes"};
+        var recipe1 = new Recipe
+        {
+            Id = 34,
+            Title = "Pancakes"
+        };
         var manager = CreateManager();
         Assert.True(manager.AddRecipe(recipe1));
-        Assert.Equal(3,manager.RecipeCount);
-        Assert.Same(recipe1,manager.FindRecipe(34));
+        Assert.Equal(3, manager.RecipeCount);
+        Assert.Same(recipe1, manager.FindRecipe(34));
     }
 
     [Fact]
     public void AddRecipe_DuplicateId_ReturnsFalseAndCountUnchanged()
     {
-        var recipe1 = new Recipe{Id = 10, Title = "Pancakes"};
+        var recipe1 = new Recipe
+        {
+            Id = 10,
+            Title = "Pancakes"
+        };
         var manager = CreateManager();
         Assert.False(manager.AddRecipe(recipe1));
-        Assert.Equal(2,manager.RecipeCount);
-        var correct = manager.FindRecipe(10);
-        Assert.Equal("Recipe A",correct?.Title);
+        Assert.Equal(2, manager.RecipeCount);
+        var existingRecipe = manager.FindRecipe(10);
+        Assert.Equal("Recipe A", existingRecipe?.Title);
     }
 
     [Fact]
     public void AddRecipe_NonPositiveId_ReturnsFalse()
     {
-        var recipe1 = new Recipe{Id = -10, Title = "Pancakes"};
+        var recipe1 = new Recipe
+        {
+            Id = -10,
+            Title = "Pancakes"
+        };
         var manager = CreateManager();
         Assert.False(manager.AddRecipe(recipe1));
-        Assert.Equal(2,manager.RecipeCount);
+        Assert.Equal(2, manager.RecipeCount);
     }
 
     [Fact]
     public void AddRecipe_EmptyTitle_ReturnsFalse()
     {
-        var recipe1 = new Recipe{Id = 99, Title = ""};
+        var recipe1 = new Recipe
+        {
+            Id = 99,
+            Title = ""
+        };
         var manager = CreateManager();
         Assert.False(manager.AddRecipe(recipe1));
-        Assert.Equal(2,manager.RecipeCount);
+        Assert.Equal(2, manager.RecipeCount);
     }
 
     [Fact]
@@ -138,7 +169,7 @@ public sealed class RecipeManagerTests
     {
         var manager = CreateManager();
         Assert.True(manager.RemoveRecipe(10));
-        Assert.Equal(1,manager.RecipeCount);
+        Assert.Equal(1, manager.RecipeCount);
         Assert.Null(manager.FindRecipe(10));
     }
 
@@ -147,7 +178,7 @@ public sealed class RecipeManagerTests
     {
         var manager = CreateManager();
         Assert.False(manager.RemoveRecipe(100));
-        Assert.Equal(2,manager.RecipeCount);
+        Assert.Equal(2, manager.RecipeCount);
     }
 
     [Fact]
@@ -156,8 +187,8 @@ public sealed class RecipeManagerTests
         var manager = CreateManager();
         manager.AddRecipeToCookingPlan(10);
         Assert.False(manager.RemoveRecipe(10));
-        Assert.Equal(2, manager.RecipeCount);          
-        Assert.NotNull(manager.FindRecipe(10)); 
+        Assert.Equal(2, manager.RecipeCount);
+        Assert.NotNull(manager.FindRecipe(10));
     }
     // AddIngredient to shoppinglist tests
     [Fact]
@@ -197,7 +228,7 @@ public sealed class RecipeManagerTests
         manager.AddIngredientsToShoppingList(10);
         manager.AddIngredientsToShoppingList(10);
         Assert.Equal(2, manager.ShoppingItemCount);
-        Assert.Equal(new[] { "1 apple", "1 apple" },manager.GetShoppingList());
+        Assert.Equal(new[] { "1 apple", "1 apple" }, manager.GetShoppingList());
     }
     // GetShoppingList and ClearShoppingList tests
     [Fact]
@@ -207,7 +238,7 @@ public sealed class RecipeManagerTests
         manager.AddIngredientsToShoppingList(10);
         Assert.Equal(["1 apple"], manager.GetShoppingList());
     }
-    
+
     [Fact]
     public void ClearShoppingList_RemoveAllItems()
     {
@@ -216,7 +247,7 @@ public sealed class RecipeManagerTests
         manager.AddIngredientsToShoppingList(10);
         manager.ClearShoppingList();
         Assert.Empty(manager.GetShoppingList());
-        Assert.Equal(0,manager.ShoppingItemCount);
+        Assert.Equal(0, manager.ShoppingItemCount);
     }
 
     // AddRecipeToCookingPlan items
@@ -227,7 +258,7 @@ public sealed class RecipeManagerTests
         var manager = CreateManager();
         var result = manager.AddRecipeToCookingPlan(10);
         Assert.True(result);
-        Assert.Equal(1,manager.CookingPlanCount);
+        Assert.Equal(1, manager.CookingPlanCount);
     }
 
     [Fact]
@@ -236,7 +267,7 @@ public sealed class RecipeManagerTests
         var manager = CreateManager();
         var result = manager.AddRecipeToCookingPlan(9991);
         Assert.False(result);
-        Assert.Equal(0,manager.CookingPlanCount);
+        Assert.Equal(0, manager.CookingPlanCount);
     }
 
     [Fact]
@@ -246,7 +277,7 @@ public sealed class RecipeManagerTests
         Assert.True(manager.AddRecipeToCookingPlan(10));
         var result = manager.AddRecipeToCookingPlan(10);
         Assert.False(result);
-        Assert.Equal(1,manager.CookingPlanCount);
+        Assert.Equal(1, manager.CookingPlanCount);
     }
     // RemoveRecipeToCookingPlan items
     [Fact]
@@ -256,8 +287,8 @@ public sealed class RecipeManagerTests
         manager.AddRecipeToCookingPlan(10);
         var result = manager.RemoveRecipeFromCookingPlan(10);
         Assert.True(result);
-        Assert.Equal(0,manager.CookingPlanCount);
-        Assert.Equal(1,manager.RemovedRecipeCount);
+        Assert.Equal(0, manager.CookingPlanCount);
+        Assert.Equal(1, manager.RemovedRecipeCount);
     }
 
     [Fact]
@@ -266,8 +297,8 @@ public sealed class RecipeManagerTests
         var manager = CreateManager();
         var result = manager.RemoveRecipeFromCookingPlan(10);
         Assert.False(result);
-        Assert.Equal(0,manager.CookingPlanCount);
-        Assert.Equal(0,manager.RemovedRecipeCount);
+        Assert.Equal(0, manager.CookingPlanCount);
+        Assert.Equal(0, manager.RemovedRecipeCount);
     }
 
     //PeekLastRemoveRecipe tests
@@ -286,8 +317,8 @@ public sealed class RecipeManagerTests
         manager.AddRecipeToCookingPlan(20);
         manager.RemoveRecipeFromCookingPlan(10);
         manager.RemoveRecipeFromCookingPlan(20);
-        Assert.Equal(20,manager.PeekLastRemovedRecipe());
-        Assert.Equal(2,manager.RemovedRecipeCount);
+        Assert.Equal(20, manager.PeekLastRemovedRecipe());
+        Assert.Equal(2, manager.RemovedRecipeCount);
 
     }
     // RestoreLastRemoveRecipe tests
@@ -305,10 +336,10 @@ public sealed class RecipeManagerTests
         manager.AddRecipeToCookingPlan(10);
         manager.RemoveRecipeFromCookingPlan(10);
         Assert.True(manager.RestoreLastRemovedRecipe());
-        Assert.Equal(1,manager.CookingPlanCount);
-        Assert.Equal(0,manager.RemovedRecipeCount);
+        Assert.Equal(1, manager.CookingPlanCount);
+        Assert.Equal(0, manager.RemovedRecipeCount);
     }
-    
+
     /*
     RestoreLastRemovedRecipe pops the ID before checking eligibility, matching the order described in the spec. 
     If restoration fails, the ID is not returned to the stack.
@@ -321,8 +352,8 @@ public sealed class RecipeManagerTests
         manager.RemoveRecipeFromCookingPlan(10);
         manager.RemoveRecipe(10);
         Assert.False(manager.RestoreLastRemovedRecipe());
-        Assert.Equal(0,manager.CookingPlanCount);
-        Assert.Equal(0,manager.RemovedRecipeCount);
+        Assert.Equal(0, manager.CookingPlanCount);
+        Assert.Equal(0, manager.RemovedRecipeCount);
     }
 
     // GetCookingPlan tests
@@ -332,7 +363,7 @@ public sealed class RecipeManagerTests
         var manager = CreateManager();
         manager.AddRecipeToCookingPlan(10);
         manager.AddRecipeToCookingPlan(20);
-        Assert.Equal([10,20],manager.GetCookingPlan());
+        Assert.Equal([10, 20], manager.GetCookingPlan());
     }
 
     [Fact]
@@ -351,7 +382,7 @@ public sealed class RecipeManagerTests
     {
         var manager = CreateManager();
         Assert.True(manager.StartCooking(10));
-        Assert.Equal(2,manager.PendingInstructionCount);
+        Assert.Equal(2, manager.PendingInstructionCount);
         Assert.Equal("First step", manager.PeekNextInstruction());
     }
 
@@ -360,7 +391,7 @@ public sealed class RecipeManagerTests
     {
         var manager = CreateManager();
         Assert.False(manager.StartCooking(992));
-        Assert.Equal(0,manager.PendingInstructionCount);
+        Assert.Equal(0, manager.PendingInstructionCount);
     }
 
     [Fact]
@@ -368,7 +399,7 @@ public sealed class RecipeManagerTests
     {
         var manager = CreateManager();
         Assert.False(manager.StartCooking(20));
-        Assert.Equal(0,manager.PendingInstructionCount);
+        Assert.Equal(0, manager.PendingInstructionCount);
     }
 
     // Peek and Complete next instruction tests
@@ -378,7 +409,7 @@ public sealed class RecipeManagerTests
         var manager = CreateManager();
         Assert.Null(manager.PeekNextInstruction());
     }
-    
+
     [Fact]
     public void PeekNextInstruction_DoesNotRemoveItem()
     {
@@ -386,8 +417,8 @@ public sealed class RecipeManagerTests
         manager.StartCooking(10);
         var value1 = manager.PeekNextInstruction();
         var value2 = manager.PeekNextInstruction();
-        Assert.Equal(value1,value2);
-        Assert.Equal(2,manager.PendingInstructionCount);
+        Assert.Equal(value1, value2);
+        Assert.Equal(2, manager.PendingInstructionCount);
     }
 
     [Fact]
@@ -402,9 +433,9 @@ public sealed class RecipeManagerTests
     {
         var manager = CreateManager();
         manager.StartCooking(10);
-        Assert.Equal("First step",manager.CompleteNextInstruction());
-        Assert.Equal(1,manager.PendingInstructionCount);
-        Assert.Equal("Second step",manager.PeekNextInstruction());
+        Assert.Equal("First step", manager.CompleteNextInstruction());
+        Assert.Equal(1, manager.PendingInstructionCount);
+        Assert.Equal("Second step", manager.PeekNextInstruction());
     }
 
     // T5: Test for interaction between 2 components Dictionary and Queue
@@ -416,13 +447,13 @@ public sealed class RecipeManagerTests
         {
             Id = 30,
             Title = "Recipe C",
-            Ingredients = new() {"1 apple", "2 coconut"},
-            Instructions = new() { "Wash", "Chop", "Mix"}
+            Ingredients = new() { "1 apple", "2 coconut" },
+            Instructions = new() { "Wash", "Chop", "Mix" }
         };
         Assert.True(manager.AddRecipe(newRecipe));
         Assert.True(manager.StartCooking(30));
-        Assert.Equal(3,manager.PendingInstructionCount);
-        Assert.Equal("Wash",manager.PeekNextInstruction());
+        Assert.Equal(3, manager.PendingInstructionCount);
+        Assert.Equal("Wash", manager.PeekNextInstruction());
     }
     // SearchByTitle tests
     [Fact]
@@ -431,7 +462,7 @@ public sealed class RecipeManagerTests
         var manager = CreateManager();
         var results = manager.SearchByTitle("pe A");
         var recipe = Assert.Single(results);
-        Assert.Equal(10,recipe.Id);
+        Assert.Equal(10, recipe.Id);
     }
 
     [Fact]
@@ -440,7 +471,7 @@ public sealed class RecipeManagerTests
         var manager = CreateManager();
         var results = manager.SearchByTitle("recipe A");
         var recipe = Assert.Single(results);
-        Assert.Equal(10,recipe.Id);
+        Assert.Equal(10, recipe.Id);
     }
 
     [Fact]
@@ -448,9 +479,9 @@ public sealed class RecipeManagerTests
     {
         var manager = CreateManager();
         var results = manager.SearchByTitle("");
-        Assert.Equal(2,results.Count);
-        Assert.Contains(results,recipe => recipe.Id == 10);
-        Assert.Contains(results,recipe => recipe.Id == 20);
+        Assert.Equal(2, results.Count);
+        Assert.Contains(results, recipe => recipe.Id == 10);
+        Assert.Contains(results, recipe => recipe.Id == 20);
     }
 
     [Fact]
@@ -458,9 +489,9 @@ public sealed class RecipeManagerTests
     {
         var manager = CreateManager();
         var results = manager.SearchByTitle("    ");
-        Assert.Equal(2,results.Count);
-        Assert.Contains(results,recipe => recipe.Id == 10);
-        Assert.Contains(results,recipe => recipe.Id == 20);
+        Assert.Equal(2, results.Count);
+        Assert.Contains(results, recipe => recipe.Id == 10);
+        Assert.Contains(results, recipe => recipe.Id == 20);
     }
 
     [Fact]
@@ -468,9 +499,9 @@ public sealed class RecipeManagerTests
     {
         var manager = CreateManager();
         var results = manager.SearchByTitle(null!);
-        Assert.Equal(2,results.Count);
-        Assert.Contains(results,recipe => recipe.Id == 10);
-        Assert.Contains(results,recipe => recipe.Id == 20);
+        Assert.Equal(2, results.Count);
+        Assert.Contains(results, recipe => recipe.Id == 10);
+        Assert.Contains(results, recipe => recipe.Id == 20);
     }
 
     [Fact]
@@ -488,7 +519,7 @@ public sealed class RecipeManagerTests
         var manager = CreateManager();
         var results = manager.SearchByIngredient("pple");
         var recipe = Assert.Single(results);
-        Assert.Equal(10,recipe.Id);
+        Assert.Equal(10, recipe.Id);
     }
 
     [Fact]
@@ -497,7 +528,7 @@ public sealed class RecipeManagerTests
         var manager = CreateManager();
         var results = manager.SearchByIngredient("1 APPLE");
         var recipe = Assert.Single(results);
-        Assert.Equal(10,recipe.Id);
+        Assert.Equal(10, recipe.Id);
     }
 
     [Fact]
@@ -513,9 +544,9 @@ public sealed class RecipeManagerTests
     {
         var manager = CreateManager();
         var results = manager.SearchByIngredient("");
-        Assert.Equal(2,results.Count);
-        Assert.Contains(results,recipe => recipe.Id == 10);
-        Assert.Contains(results,recipe => recipe.Id == 20);
+        Assert.Equal(2, results.Count);
+        Assert.Contains(results, recipe => recipe.Id == 10);
+        Assert.Contains(results, recipe => recipe.Id == 20);
     }
 
     [Fact]
@@ -523,9 +554,9 @@ public sealed class RecipeManagerTests
     {
         var manager = CreateManager();
         var results = manager.SearchByIngredient("   ");
-        Assert.Equal(2,results.Count);
-        Assert.Contains(results,recipe => recipe.Id == 10);
-        Assert.Contains(results,recipe => recipe.Id == 20);
+        Assert.Equal(2, results.Count);
+        Assert.Contains(results, recipe => recipe.Id == 10);
+        Assert.Contains(results, recipe => recipe.Id == 20);
     }
 
     [Fact]
@@ -533,9 +564,9 @@ public sealed class RecipeManagerTests
     {
         var manager = CreateManager();
         var results = manager.SearchByIngredient(null!);
-        Assert.Equal(2,results.Count);
-        Assert.Contains(results,recipe => recipe.Id == 10);
-        Assert.Contains(results,recipe => recipe.Id == 20);
+        Assert.Equal(2, results.Count);
+        Assert.Contains(results, recipe => recipe.Id == 10);
+        Assert.Contains(results, recipe => recipe.Id == 20);
     }
 
     [Fact]
@@ -546,102 +577,68 @@ public sealed class RecipeManagerTests
         {
             Id = 30,
             Title = "Recipe C",
-            Ingredients = new() {"1 banana", "2 green banana"},
-            Instructions = new() { "Wash", "Chop", "Mix"}
+            Ingredients = new() { "1 banana", "2 green banana" },
+            Instructions = new() { "Wash", "Chop", "Mix" }
         };
         Assert.True(manager.AddRecipe(newRecipe));
         var results = manager.SearchByIngredient("banana");
         var singleResult = Assert.Single(results);
-        Assert.Equal(30,singleResult.Id);
+        Assert.Equal(30, singleResult.Id);
     }
 
     //GetHighestProteinRecipes tests
     [Fact]
     public void GetHighestProteinRecipes_ReturnsRecipesInDescendingProteinOrder()
     {
-        var newRecipe1 = new Recipe
-        {
-            Id = 30,
-            Title = "Recipe C",
-            Ingredients = new() {"1 banana", "2 green banana"},
-            Instructions = new() { "Wash", "Chop", "Mix"},
-            Nutrition = new() {ProteinG = 10.0}
-        };
-        var newRecipe2 = new Recipe
-        {
-            Id = 40,
-            Title = "Recipe D",
-            Ingredients = new() {"1 coconut", "200g chicket fillet"},
-            Instructions = new() { "Wash", "Chop", "Mix"},
-            Nutrition = new() {ProteinG = 100.0}
-        };
-        var newRecipe3 = new Recipe
-        {
-            Id = 50,
-            Title = "Recipe E",
-            Ingredients = new() {"1 banana", "400g steak"},
-            Instructions = new() { "Wash", "Chop", "Mix"},
-            Nutrition = new() {ProteinG = 150.0}
-        };
+        var newRecipe1 = CreateProteinRecipe(30, "Recipe C", 10.0);
+        var newRecipe2 = CreateProteinRecipe(40, "Recipe D", 100.0);
+        var newRecipe3 = CreateProteinRecipe(50, "Recipe E", 150.0);
         var manager = CreateManager();
         manager.AddRecipe(newRecipe1);
         manager.AddRecipe(newRecipe2);
         manager.AddRecipe(newRecipe3);
         var protein = manager.GetHighestProteinRecipes(3);
-        Assert.Equal(3,protein.Count);
+        Assert.Equal(3, protein.Count);
         var ids = protein.Select(recipe => recipe.Id).ToList();
-        Assert.Equal([50,40,30],ids);
+        Assert.Equal([50, 40, 30], ids);
     }
 
     [Fact]
     public void GetHighestProteinRecipes_MissingNutritionOrProtein_ExcludesRecipe()
     {
-        var newRecipe1 = new Recipe
-        {
-            Id = 30,
-            Title = "Recipe C",
-            Ingredients = new() {"1 banana", "2 green banana"},
-            Instructions = new() { "Wash", "Chop", "Mix"},
-            Nutrition = new() {ProteinG = 10.0}
-        };
-        var newRecipe2 = new Recipe
+        var newRecipe1 = CreateProteinRecipe(30, "Recipe C", 10.0);
+        var recipeWithoutNutrition = new Recipe
         {
             Id = 40,
             Title = "Recipe D",
-            Ingredients = new() {"1 coconut", "200g chicket fillet"},
-            Instructions = new() { "Wash", "Chop", "Mix"}
+            Ingredients = new() { "1 coconut", "200g chicken fillet" },
+            Instructions = new() { "Wash", "Chop", "Mix" }
         };
-        var newRecipe3 = new Recipe
+
+        var recipeWithMissingProtein = new Recipe
         {
             Id = 50,
             Title = "Recipe E",
-            Ingredients = new() {"1 banana", "400g steak"},
-            Instructions = new() { "Wash", "Chop", "Mix"},
-            Nutrition = new() {ProteinG = null}
+            Ingredients = new() { "1 banana", "400g steak" },
+            Instructions = new() { "Wash", "Chop", "Mix" },
+            Nutrition = new() { ProteinG = null }
         };
         var manager = CreateManager();
         manager.AddRecipe(newRecipe1);
-        manager.AddRecipe(newRecipe2);
-        manager.AddRecipe(newRecipe3);
+        manager.AddRecipe(recipeWithoutNutrition);
+        manager.AddRecipe(recipeWithMissingProtein);
         var protein = manager.GetHighestProteinRecipes(3);
         Assert.Single(protein);
         var ids = protein.Select(recipe => recipe.Id).ToList();
-        Assert.Equal([30],ids);
+        Assert.Equal([30], ids);
     }
 
     [Fact]
     public void GetHighestProteinRecipes_CountZero_ReturnsEmptyList()
     {
         var manager = CreateManager();
-        var newRecipe3 = new Recipe
-        {
-            Id = 50,
-            Title = "Recipe E",
-            Ingredients = new() {"1 banana", "400g steak"},
-            Instructions = new() { "Wash", "Chop", "Mix"},
-            Nutrition = new() {ProteinG = 50}
-        };
-        Assert.True(manager.AddRecipe(newRecipe3));
+        var newRecipe1 = CreateProteinRecipe(30, "Recipe C", 10.0);
+        Assert.True(manager.AddRecipe(newRecipe1));
         var protein = manager.GetHighestProteinRecipes(0);
         Assert.Empty(protein);
     }
@@ -649,91 +646,35 @@ public sealed class RecipeManagerTests
     [Fact]
     public void GetHighestProteinRecipes_CountNegative_ReturnsEmptyList()
     {
-        var newRecipe3 = new Recipe
-        {
-            Id = 50,
-            Title = "Recipe E",
-            Ingredients = new() {"1 banana", "400g steak"},
-            Instructions = new() { "Wash", "Chop", "Mix"},
-            Nutrition = new() {ProteinG = 50}
-        };
+        var newRecipe1 = CreateProteinRecipe(30, "Recipe C", 10.0);
         var manager = CreateManager();
-        Assert.True(manager.AddRecipe(newRecipe3));
+        Assert.True(manager.AddRecipe(newRecipe1));
         var protein = manager.GetHighestProteinRecipes(-10);
         Assert.Empty(protein);
     }
-    
+
     [Fact]
     public void GetHighestProteinRecipes_CountSmallerThanAvailable_ReturnsOnlyTopCount()
     {
-        var newRecipe1 = new Recipe
-        {
-            Id = 30,
-            Title = "Recipe C",
-            Ingredients = new() {"1 banana", "2 green banana"},
-            Instructions = new() { "Wash", "Chop", "Mix"},
-            Nutrition = new() {ProteinG = 10.0}
-        };
-        var newRecipe2 = new Recipe
-        {
-            Id = 40,
-            Title = "Recipe D",
-            Ingredients = new() {"1 coconut", "200g chicket fillet"},
-            Instructions = new() { "Wash", "Chop", "Mix"},
-            Nutrition = new() {ProteinG = 100.0}
-        };
-        var newRecipe3 = new Recipe
-        {
-            Id = 50,
-            Title = "Recipe E",
-            Ingredients = new() {"1 banana", "400g steak"},
-            Instructions = new() { "Wash", "Chop", "Mix"},
-            Nutrition = new() {ProteinG = 150.0}
-        };
+        var newRecipe1 = CreateProteinRecipe(30, "Recipe C", 10.0);
+        var newRecipe2 = CreateProteinRecipe(40, "Recipe D", 100.0);
+        var newRecipe3 = CreateProteinRecipe(50, "Recipe E", 150.0);
         var manager = CreateManager();
         manager.AddRecipe(newRecipe1);
         manager.AddRecipe(newRecipe2);
         manager.AddRecipe(newRecipe3);
         var protein = manager.GetHighestProteinRecipes(2);
         var ids = protein.Select(recipe => recipe.Id).ToList();
-        Assert.Equal([50,40],ids);
+        Assert.Equal([50, 40], ids);
     }
 
     [Fact]
     public void GetHighestProteinRecipes_CountLargerThanAvailable_ReturnsAllWithProtein()
     {
-        var newRecipe1 = new Recipe
-        {
-            Id = 30,
-            Title = "Recipe C",
-            Ingredients = new() {"1 banana", "2 green banana"},
-            Instructions = new() { "Wash", "Chop", "Mix"},
-            Nutrition = new() {ProteinG = 10.0}
-        };
-        var newRecipe2 = new Recipe
-        {
-            Id = 40,
-            Title = "Recipe D",
-            Ingredients = new() {"1 coconut", "200g chicket fillet"},
-            Instructions = new() { "Wash", "Chop", "Mix"},
-            Nutrition = new() {ProteinG = 100.0}
-        };
-        var newRecipe3 = new Recipe
-        {
-            Id = 50,
-            Title = "Recipe E",
-            Ingredients = new() {"1 banana", "400g steak"},
-            Instructions = new() { "Wash", "Chop", "Mix"},
-            Nutrition = new() {ProteinG = 150.0}
-        };
-        var newRecipe4 = new Recipe
-        {
-            Id = 60,
-            Title = "Recipe F",
-            Ingredients = new() {"1 banana", "400g pork"},
-            Instructions = new() { "Wash", "Chop", "Mix"},
-            Nutrition = new() {ProteinG = 300.0}
-        };
+        var newRecipe1 = CreateProteinRecipe(30, "Recipe C", 10.0);
+        var newRecipe2 = CreateProteinRecipe(40, "Recipe D", 100.0);
+        var newRecipe3 = CreateProteinRecipe(50, "Recipe E", 150.0);
+        var newRecipe4 = CreateProteinRecipe(60, "Recipe F", 300.0);
         var manager = CreateManager();
         manager.AddRecipe(newRecipe1);
         manager.AddRecipe(newRecipe2);
@@ -741,9 +682,9 @@ public sealed class RecipeManagerTests
         manager.AddRecipe(newRecipe4);
         var protein = manager.GetHighestProteinRecipes(10);
         var ids = protein.Select(recipe => recipe.Id).ToList();
-        Assert.Equal([60,50,40,30],ids);
+        Assert.Equal([60, 50, 40, 30], ids);
     }
-    
+
     //AddSavedRecipe tests
     [Fact]
     public void AddSavedRecipe_ExistingRecipe_ReturnsTrueAndIsSaved()
@@ -785,7 +726,7 @@ public sealed class RecipeManagerTests
         Assert.False(manager.RemoveSavedRecipe(10));
         Assert.False(manager.IsRecipeSaved(10));
     }
-    
+
     // IsRecipeSaved Tests
     [Fact]
     public void IsRecipeSaved_SavedRecipe_ReturnsTrue()
@@ -818,33 +759,27 @@ public sealed class RecipeManagerTests
         Assert.True(manager.AddSavedRecipe(10));
         Assert.True(manager.AddSavedRecipe(20));
         var results = manager.GetSavedRecipes();
-        Assert.Contains(10,results);
-        Assert.Contains(20,results);
-        Assert.Equal(2,results.Count);
+        Assert.Contains(10, results);
+        Assert.Contains(20, results);
+        Assert.Equal(2, results.Count);
     }
 
-    // PartB method workflow test 
+    // Part B method workflow test 
     [Fact]
     public void PartBWorkflow_SearchSaveReportAndRemove_WorksTogether()
     {
         var manager = CreateManager();
-        var proteinRecipe = new Recipe
-        {
-            Id = 40,
-            Title = "Recipe D",
-            Ingredients = new() {"1 coconut", "200g chicket fillet"},
-            Instructions = new() { "Wash", "Chop", "Mix"},
-            Nutrition = new() {ProteinG = 100.0}
-        };
+        var proteinRecipe = CreateProteinRecipe(30, "Recipe D", 100.0);
         Assert.True(manager.AddRecipe(proteinRecipe));
-        int searchedRecipeId = Assert.Single(manager.SearchByTitle("ipe D").Select(recipe => recipe.Id));
+        var searchedRecipeId = Assert.Single(manager.SearchByTitle("ipe D").Select(recipe => recipe.Id));
         Assert.True(manager.AddSavedRecipe(searchedRecipeId));
         Assert.True(manager.IsRecipeSaved(searchedRecipeId));
         var highProteinRecipe = Assert.Single(manager.GetHighestProteinRecipes(3));
-        Assert.Equal(searchedRecipeId,highProteinRecipe.Id);
+        Assert.Equal(searchedRecipeId, highProteinRecipe.Id);
         Assert.True(manager.RemoveSavedRecipe(searchedRecipeId));
         Assert.False(manager.IsRecipeSaved(searchedRecipeId));
     }
+
     private static RecipeManager CreateManager()
     {
         return new RecipeManager(new[]
@@ -862,5 +797,16 @@ public sealed class RecipeManagerTests
                 Title = "Recipe B"
             }
         });
+    }
+    private static Recipe CreateProteinRecipe(int id, string title, double protein)
+    {
+        return new Recipe
+        {
+            Id = id,
+            Title = title,
+            Ingredients = new() { "1 banana", "2 green banana" },
+            Instructions = new() { "Wash", "Chop", "Mix" },
+            Nutrition = new() { ProteinG = protein }
+        };
     }
 }
