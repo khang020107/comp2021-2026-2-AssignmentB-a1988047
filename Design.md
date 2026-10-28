@@ -16,7 +16,7 @@ Complete this document for **Part B**.
 
 ## 2. Integration
 
-In a short paragraph, explain how the new Part B features use the existing Part A `RecipeManager` and recipe catalogue.
+- The part B features use the recipe catalogue in Part A's dictionary field (_recipes): SearchByTitle, SearchByIngredient and GetHighestProteinRecipes all traverse _recipes.Values using LINQ to inspect the recipes already loaded into the catalogue. AddSavedRecipe uses the existing Part A method FindRecipe(recipeId) to check whether the recipe exists before adding its ID to the part B HashSet<int>. Part B does not replace or modify and Part A's collections: dictionary,list,linkedlist,stack and queue remain as private field and continue to support part A's functionality. An personal choose structure for part b is _savedRecipeIds, which store saved recipeIDs to use seperately.
 
 ## 3. Basic complexity
 
